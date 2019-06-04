@@ -8,8 +8,8 @@ class Login extends Component {
     const protocol = process.env.NODE_ENV === "production" ? "https" : "http"
 
     const apiUrl = process.browser
-      ? `${protocol}://${window.location.host}/api/login.js`
-      : `${protocol}://${req.headers.host}/api/login.js`
+      ? `${protocol}://${window.location.host}/api/login`
+      : `${protocol}://${req.headers.host}/api/login`
 
     return { apiUrl }
   }
