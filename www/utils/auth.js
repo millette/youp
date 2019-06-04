@@ -1,3 +1,4 @@
+// npm
 import { Component } from "react"
 import Router from "next/router"
 import nextCookie from "next-cookies"
@@ -16,12 +17,11 @@ export const logout = () => {
 }
 
 // Gets the display name of a JSX component for dev tools
-const getDisplayName = (Component) =>
-  Component.displayName || Component.name || "Component"
+// const getDisplayName = (Component) => Component.displayName || Component.name || "Component"
 
 export const withAuthSync = (WrappedComponent) =>
   class extends Component {
-    static displayName = `withAuthSync(${getDisplayName(WrappedComponent)})`
+    // static displayName = `withAuthSync(${getDisplayName(WrappedComponent)})`
 
     static async getInitialProps(ctx) {
       const token = auth(ctx)
