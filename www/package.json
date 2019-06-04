@@ -1,0 +1,30 @@
+{
+  "name": "www",
+  "version": "0.0.0",
+  "main": "index.js",
+  "author": {
+    "name": "Robin Millette",
+    "email": "robin@millette.info",
+    "url": "http://robin.millette.info"
+  },
+  "engines": {
+    "node": ">= 10.16.0"
+  },
+  "license": "AGPL-3.0",
+  "scripts": {
+    "dev": "node server.js",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "isomorphic-unfetch": "^3.0.0",
+    "js-cookie": "^2.2.0",
+    "next": "^8.1.0",
+    "next-cookies": "^1.1.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
+  },
+  "devDependencies": {
+    "http-proxy": "^1.17.0"
+  }
+}
