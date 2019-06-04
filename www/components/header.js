@@ -1,7 +1,10 @@
+// npm
 import Link from "next/link"
+
+// self
 import { logout } from "../utils/auth"
 
-const Header = (props) => (
+const Header = () => (
   <header>
     <nav>
       <ul>

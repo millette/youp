@@ -1,9 +1,11 @@
-import React from "react"
+// npm
 import Head from "next/head"
+
+// self
 import Header from "./header"
 
-const Layout = (props) => (
-  <React.Fragment>
+const Layout = ({ children }) => (
+  <>
     <Head>
       <title>With Cookies</title>
     </Head>
@@ -32,9 +34,9 @@ const Layout = (props) => (
     <Header />
 
     <main>
-      <div className="container">{props.children}</div>
+      <div className="container">{children}</div>
     </main>
-  </React.Fragment>
+  </>
 )
 
 export default Layout
