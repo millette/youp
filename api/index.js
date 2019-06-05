@@ -11,19 +11,30 @@ const grant = new Grant({
     dynamic: true,
     protocol: "http",
     host: "localhost:3000",
-    // transport: "session",
+    state: true,
+    nonce: true,
+    transport: "session",
   },
 })
+console.log("grant.config-0", grant.config)
+
 const app = new Koa()
 // REQUIRED: any session store - see /examples/koa-session-stores
 app.keys = ["grant"]
 app.use(session(app))
 // mount grant
 app.use(mount(grant))
+console.log("grant.config-1", grant.config)
 
 app.use((ctx) => {
+  console.log("grant.config-2", grant.config)
   // console.log('ctx.session', ctx.session)
   // ignore favicon
+  console.log("ctx-request", ctx.request)
+  console.log("ctx-response", ctx.response)
+  console.log("ctx-app", ctx.app)
+  console.log("ctx-originalUrl", ctx.originalUrl)
+  console.log("ctx-session", ctx.session)
   if (ctx.path === "/favicon.ico") return
 
   let n = ctx.session.views || 0
@@ -31,9 +42,6 @@ app.use((ctx) => {
   ctx.body = n + " views"
 })
 
-app.listen(3000)
-console.log("listening on port 3000")
+app.listen(3001)
+console.log("listening on port 3001")
 console.log("grant.config", grant.config)
-
-// visit to http://localhost:3000/connect/github
-// redirects to https://github.com/login/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fconnect%2Fgithub%2Fcallback
