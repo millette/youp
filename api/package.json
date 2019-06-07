@@ -17,6 +17,7 @@
   "dependencies": {
     "dotenv-safe": "^6.1.0",
     "grant-koa": "^4.5.2",
+    "grant-profile": "0.0.4",
     "koa": "^2.7.0",
     "koa-bodyparser": "^4.2.1",
     "koa-mount": "^4.0.0",
