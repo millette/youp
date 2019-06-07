@@ -2,7 +2,7 @@
 import Link from "next/link"
 
 // self
-import { logout } from "../utils/auth"
+// import { logout } from "../utils/auth"
 
 const Header = () => (
   <header>
@@ -24,7 +24,13 @@ const Header = () => (
           </Link>
         </li>
         <li>
+          {/*
           <button onClick={logout}>Logout</button>
+          <a href="/api/logout">Logout</a>
+          */}
+          <form method="post" action="/api/logout">
+            <button type="submit">Logout</button>
+          </form>
         </li>
       </ul>
     </nav>
