@@ -1,10 +1,7 @@
 // npm
 import Link from "next/link"
 
-// self
-// import { logout } from "../utils/auth"
-
-const Header = () => (
+const Header = ({ profile }) => (
   <header>
     <nav>
       <ul>
@@ -13,25 +10,21 @@ const Header = () => (
             <a>Home</a>
           </Link>
         </li>
-        <li>
-          <Link href="/login">
-            <a>Login</a>
-          </Link>
-        </li>
-        <li>
-          <Link href="/profile">
-            <a>Profile</a>
-          </Link>
-        </li>
-        <li>
-          {/*
-          <button onClick={logout}>Logout</button>
-          <a href="/api/logout">Logout</a>
-          */}
-          <form method="post" action="/api/logout">
-            <button type="submit">Logout</button>
-          </form>
-        </li>
+        {profile ? (
+          <li>
+            <form method="post" action="/api/logout">
+              <button type="submit">
+                Logout {profile.name || profile.login}
+              </button>
+            </form>
+          </li>
+        ) : (
+          <li>
+            <Link href="/login">
+              <a>Login</a>
+            </Link>
+          </li>
+        )}
       </ul>
     </nav>
     <style jsx>{`
