@@ -4,7 +4,7 @@ import Layout from "../components/layout"
 const Login = (props) => (
   <Layout>
     <div className="login">
-      <form action="/connect/github">
+      <form method="post" action="/connect/github">
         {/*
         <label>GitHub key
           <input
