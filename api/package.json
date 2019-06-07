@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "license": "AGPL-3.0",
   "author": {
@@ -15,6 +15,7 @@
     "node": ">= 10.16.0"
   },
   "dependencies": {
+    "dotenv-safe": "^6.1.0",
     "grant-koa": "^4.5.2",
     "koa": "^2.7.0",
     "koa-mount": "^4.0.0",
