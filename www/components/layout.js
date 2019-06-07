@@ -4,7 +4,7 @@ import Head from "next/head"
 // self
 import Header from "./header"
 
-const Layout = ({ children }) => (
+const Layout = ({ profile, children }) => (
   <>
     <Head>
       <title>With Cookies</title>
@@ -31,7 +31,7 @@ const Layout = ({ children }) => (
         padding-right: 1rem;
       }
     `}</style>
-    <Header />
+    <Header profile={profile} />
 
     <main>
       <div className="container">{children}</div>
