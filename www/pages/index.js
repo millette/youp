@@ -7,7 +7,7 @@ const atob =
   (typeof window !== "undefined" && window.atob) ||
   ((a) => Buffer.from(a, "base64").toString())
 
-const Home = (props) => (
+const Home = ({ provider, token, profile }) => (
   <Layout>
     <h1>Cookie-based authentication example</h1>
 
@@ -24,7 +24,9 @@ const Home = (props) => (
         the `/login` route.
       </li>
     </ol>
-    <pre>{JSON.stringify(props, null, "  ")}</pre>
+    <pre>{JSON.stringify(provider, null, "  ")}</pre>
+    <pre>{JSON.stringify(token, null, "  ")}</pre>
+    <pre>{JSON.stringify(profile, null, "  ")}</pre>
     <style jsx>{`
       li {
         margin-bottom: 0.5rem;
@@ -34,46 +36,22 @@ const Home = (props) => (
 )
 
 Home.getInitialProps = (ctx) => {
-  const { req } = ctx
-  const oy = nextCookie(ctx)
-  if (oy["koa:sess"]) {
-    console.log("SESION-COOKIE!", !!req)
-    const a = atob(oy["koa:sess"])
-    const b = JSON.parse(a)
-    console.log("A", a)
-    console.log("B", b)
-    const ret = {
-      provider: b.grant.provider,
-      token: b.grant.response.access_token,
-    }
-    // cookie.set('resp', ret)
-    return ret
-  }
-  return {}
-  /*
-  console.log('oy', oy)
-  console.log('req.url', req && req.url)
-  console.log('req.headers', req && req.headers)
-  */
-
-  /*
-  if (req) return {}
-
-  const ga = cookie.get('resp')
-  console.log('GA', ga)
-  return {}
-  */
-
-  /*
-  const a2 = atob(ga)
-  const b2 = JSON.parse(a2)
-  console.log('A2', a2)
-  console.log('B2', b2)
+  // const cookies = nextCookie(ctx)
+  // const sesh = cookies && cookies["koa:sess"]
+  const sesh = nextCookie(ctx)["koa:sess"]
+  if (!sesh) return {}
+  const {
+    grant: {
+      provider,
+      profile,
+      response: { access_token: token },
+    },
+  } = JSON.parse(atob(sesh))
   return {
-    provider: b2.grant.provider,
-    token: b2.grant.response.access_token
+    provider,
+    token,
+    profile,
   }
-  */
 }
 
 export default Home
