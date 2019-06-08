@@ -22,6 +22,10 @@ const grantConfig = {
     key: process.env.GITHUB_KEY,
     secret: process.env.GITHUB_SECRET,
   },
+  twitter: {
+    key: process.env.TWITTER_KEY,
+    secret: process.env.TWITTER_SECRET,
+  },
 }
 
 const grant = new Grant(grantConfig)
@@ -35,6 +39,7 @@ app.use(profile(grantConfig))
 app.use((ctx) => {
   if (ctx.request.path === callback) {
     if (ctx.session) {
+      console.log("ctx.session.grant", ctx.session.grant)
       const {
         profile: {
           login,
