@@ -38,58 +38,25 @@ app.use(profile(grantConfig))
 
 app.use((ctx) => {
   if (ctx.request.path === "/api/fixer") {
-    console.log("grant.config", grant.config)
+    // console.log("grant.config", grant.config)
     grant.config.github.secret = process.env.GITHUB_SECRET
     ctx.body = grant.config
   }
 
   if (ctx.request.path === callback) {
+    // console.log("ctx.session.grant", ctx.session && ctx.session.grant)
     if (ctx.session) {
-      console.log("ctx.session.grant", ctx.session.grant)
-      const {
-        profile: {
-          login,
-          id,
-          node_id,
-          avatar_url,
-          name,
-          company,
-          blog,
-          location,
-          email,
-          hireable,
-          bio,
-          public_repos,
-          public_gists,
-          followers,
-          following,
-          created_at,
-          updated_at,
-        },
-      } = ctx.session.grant
-
-      ctx.session.grant.profile = {
-        login,
-        id,
-        node_id,
-        avatar_url,
-        name,
-        company,
-        blog,
-        location,
-        email,
-        hireable,
-        bio,
-        public_repos,
-        public_gists,
-        followers,
-        following,
-        created_at,
-        updated_at,
+      if (ctx.session.grant.response.raw.error) {
+        ctx.body = ctx.session.grant.response.raw
+        ctx.session = null
+        return
       }
+      ctx.session.grant.profile = ctx.session.grant.profile
+      return ctx.response.redirect("/")
     }
-    ctx.response.redirect("/")
+    ctx.body = { err: "no-session" }
   }
+
   if (ctx.request.path === "/api/logout" && ctx.request.method === "POST") {
     ctx.session = null
     ctx.response.redirect("/")

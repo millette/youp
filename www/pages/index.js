@@ -27,13 +27,15 @@ const Home = ({ provider, token, profile }) => (
 Home.getInitialProps = (ctx) => {
   const sesh = nextCookie(ctx)["koa:sess"]
   if (!sesh) return {}
+  const abc = atob(sesh)
+  console.log("ABC", abc)
   const {
     grant: {
       provider,
       profile,
       response: { access_token: token },
     },
-  } = JSON.parse(atob(sesh))
+  } = JSON.parse(abc)
   return {
     provider,
     token,
