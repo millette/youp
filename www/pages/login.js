@@ -5,26 +5,10 @@ const Login = (props) => (
   <Layout>
     <div className="login">
       <form method="post" action="/connect/github">
-        {/*
-        <label>GitHub key
-          <input
-            type="text"
-            name="key"
-          />
-        </label>
-        <label>GitHub secret
-          <input
-            type="text"
-            name="secret"
-          />
-        </label>
-        <input
-          type="hidden"
-          name="callback"
-          value="/login"
-        />
-        */}
-        <button type="submit">Login</button>
+        <button type="submit">Login (github)</button>
+      </form>
+      <form method="post" action="/connect/twitter">
+        <button type="submit">Login (twitter)</button>
       </form>
     </div>
     <style jsx>{`
