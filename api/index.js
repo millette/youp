@@ -7,6 +7,7 @@ const bodyParser = require("koa-bodyparser")
 const session = require("koa-session") // see https://nodejs.org/api/deprecations.html#deprecations_dep0079_custom_inspection_function_on_objects_via_inspect
 const mount = require("koa-mount")
 const Grant = require("grant-koa")
+const grantProviders = Object.keys(require("grant/config/oauth.json"))
 const level = require("level")
 const profile = require("grant-profile").koa()
 
@@ -45,9 +46,11 @@ const grantConfig = {
     transport: "session",
     callback,
   },
-  github: {},
-  twitter: {},
 }
+
+grantProviders.forEach((provider) => {
+  if (!grantConfig[provider]) grantConfig[provider] = {}
+})
 
 const grant = new Grant(grantConfig)
 const app = new Koa()
@@ -59,7 +62,22 @@ app.use(bodyParser())
 app.use(mount(grant))
 app.use(profile(grantConfig))
 
+const areEnabled = () => {
+  const enabled = []
+  let r
+  for (r in grant.config) {
+    if (r === "defaults") continue
+    const { key, secret } = grant.config[r]
+    if (key && secret) enabled.push(r)
+  }
+  return { enabled }
+}
+
 app.use((ctx) => {
+  if (ctx.request.path === "/api/enabled") {
+    ctx.body = areEnabled()
+  }
+
   if (ctx.request.path === "/api/fixer") {
     console.log("grant.config", grant.config)
     grant.config.github.key = process.env.GITHUB_KEY
