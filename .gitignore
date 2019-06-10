@@ -1,4 +1,5 @@
 node_modules/
 .next/
+api/my-db/
 .env
 youp.code-workspace
