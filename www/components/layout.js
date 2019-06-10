@@ -4,7 +4,7 @@ import Head from "next/head"
 // self
 import Header from "./header"
 
-const Layout = ({ profile, children }) => (
+const Layout = ({ token, children }) => (
   <>
     <Head>
       <title>With Cookies</title>
@@ -31,7 +31,7 @@ const Layout = ({ profile, children }) => (
         padding-right: 1rem;
       }
     `}</style>
-    <Header profile={profile} />
+    <Header token={token} />
 
     <main>
       <div className="container">{children}</div>

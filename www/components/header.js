@@ -1,7 +1,7 @@
 // npm
 import Link from "next/link"
 
-const Header = ({ profile }) => (
+const Header = ({ token }) => (
   <header>
     <nav>
       <ul>
@@ -10,12 +10,10 @@ const Header = ({ profile }) => (
             <a>Home</a>
           </Link>
         </li>
-        {profile ? (
+        {token ? (
           <li>
             <form method="post" action="/api/logout">
-              <button type="submit">
-                Logout {profile.name || profile.login}
-              </button>
+              <button type="submit">Logout {token}</button>
             </form>
           </li>
         ) : (
