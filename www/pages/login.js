@@ -3,12 +3,13 @@ import Layout from "../components/layout"
 
 const Login = (props) => (
   <Layout>
+    <h1>Login</h1>
     <div className="login">
       <form method="post" action="/connect/github">
-        <button type="submit">Login (github)</button>
+        <button type="submit">github</button>
       </form>
       <form method="post" action="/connect/twitter">
-        <button type="submit">Login (twitter)</button>
+        <button type="submit">twitter</button>
       </form>
     </div>
     <style jsx>{`
