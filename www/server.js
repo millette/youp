@@ -15,6 +15,7 @@ app.prepare().then(() => {
   createServer((req, res) => {
     if (req.url.indexOf("/connect/") && req.url.indexOf("/api/"))
       return handle(req, res)
+    console.log("proxying...", new Date(), req.url)
     proxy.web(req, res, { target }, isErr)
   }).listen(3000, (err) => {
     if (err) throw err
