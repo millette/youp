@@ -9,16 +9,35 @@ const mount = require("koa-mount")
 const Grant = require("grant-koa")
 const grantProviders = Object.keys(require("grant/config/oauth.json"))
 const level = require("level")
+const levelErrors = require("level-errors")
 const profile = require("grant-profile").koa()
 
 const callback = "/api/welcome"
 
 const elDb = level("my-db", { valueEncoding: "json" })
 
-const prefixed = (key) => `session:${key}`
+const prefixed = (key) => {
+  console.log("PREFIXED", new Date(), `session:${key}`)
+  return `session:${key}`
+}
 
 const store = {
-  get: (key) => elDb.get(prefixed(key)),
+  get: (key) => {
+    return (
+      elDb
+        .get(prefixed(key))
+        /*
+      .then((x) => {
+        console.log('GET-STORE', new Date(), key, x)
+        return x
+      })
+      */
+        .catch((e) => {
+          console.log("GET-STORE ERR", new Date(), key, e)
+          if (!(e instanceof levelErrors.NotFoundError)) throw e
+        })
+    )
+  },
   set: (key, sess) => elDb.put(prefixed(key), sess),
   destroy: (key) => elDb.del(prefixed(key)),
   /*
@@ -68,59 +87,67 @@ app.keys = ["grant"]
 app.use(session({ store }, app))
 app.use(bodyParser())
 app.use(mount(grant))
-app.use(profile(grantConfig))
 
 const areEnabled = () => {
   const enabled = []
   for (let r in grant.config)
     if (grant.config[r].key && grant.config[r].secret) enabled.push(r)
+
+  console.log("ENABLED", new Date(), enabled)
   return { enabled }
 }
 
+app.use(profile(grantConfig))
+
 app.use((ctx) => {
-  if (ctx.request.path === "/api/enabled") {
-    ctx.body = areEnabled()
-  }
+  switch (ctx.request.path) {
+    case "/api/enabled":
+      ctx.body = areEnabled()
+      break
 
-  if (ctx.request.path === "/api/fixer") {
-    // console.log("grant.config", grant.config)
-    grant.config.github.key = process.env.GITHUB_KEY
-    grant.config.github.secret = process.env.GITHUB_SECRET
-    // console.log("grant.config", grant.config)
-    ctx.body = areEnabled()
-  }
+    case "/api/fixer":
+      grant.config.github.key = process.env.GITHUB_KEY
+      grant.config.github.secret = process.env.GITHUB_SECRET
+      ctx.body = areEnabled()
+      break
 
-  if (ctx.request.path === callback) {
-    // console.log("ctx.session.grant", ctx.session && ctx.session.grant)
-    if (ctx.session && ctx.session.grant) {
-      console.log("ctx.session", ctx.session.grant)
-      // ctx.cookies.set('koa:sess', null, { sign: true })
-      // ctx.session = null
-      /*
-      const raw = ctx.session.grant.response.raw
-      if (raw.error) {
-        ctx.session = null
-        // ctx.cookies.set('koa:sess')
-        ctx.cookies.set('token')
-        ctx.body = raw
-        return
+    case callback:
+      if (!ctx.session || !ctx.session.grant) {
+        ctx.body = { err: "no-session", session: ctx.session }
+        break
       }
-      // ctx.cookies.set('koa:sess')
-      ctx.cookies.set('token', ctx.session.grant.response.access_token, { httpOnly: false })
-      ctx.session = null
-      */
-      return ctx.response.redirect("/")
-    }
-    // ctx.cookies.set('koa:sess')
-    // ctx.cookies.set('token')
-    ctx.body = { err: "no-session" }
-  }
+      const {
+        provider,
+        profile,
+        response: { access_token: token },
+      } = ctx.session.grant
+      const userId = profile.id || profile.login || profile.url
+      ctx.assert(userId, 501, "Could not determine user id from profile.", {
+        provider,
+        profile,
+      })
+      const profileId = ["user", provider, userId].join(":")
+      profile._sessionKey = prefixed(ctx.cookies.get("koa:sess"))
+      elDb.put(profileId, profile)
+      ctx.session.grant.profile = profileId
+      ctx.cookies.set(
+        "hello",
+        JSON.stringify({
+          profileId,
+          provider,
+          token,
+        }),
+        { httpOnly: false, sign: true }
+      )
+      ctx.response.redirect("/")
+      break
 
-  if (ctx.request.path === "/api/logout" && ctx.request.method === "POST") {
-    // ctx.cookies.set('koa:sess')
-    // ctx.cookies.set('token')
-    ctx.session = null
-    ctx.response.redirect("/")
+    case "/api/logout":
+      if (ctx.request.method !== "POST") break
+      ctx.session = null
+      ctx.cookies.set("hello", null, { httpOnly: false, sign: true })
+      ctx.response.redirect("/")
+      break
   }
 })
 
