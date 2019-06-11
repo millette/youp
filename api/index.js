@@ -15,7 +15,13 @@ const callback = "/api/welcome"
 
 const elDb = level("my-db", { valueEncoding: "json" })
 
+const prefixed = (key) => `session:${key}`
+
 const store = {
+  get: (key) => elDb.get(prefixed(key)),
+  set: (key, sess) => elDb.put(prefixed(key), sess),
+  destroy: (key) => elDb.del(prefixed(key)),
+  /*
   get: (key, maxAge, { rolling }) => {
     console.log("get-key", key)
     console.log("get-maxAge", maxAge)
@@ -37,6 +43,7 @@ const store = {
     console.log("destroy-key", key)
     return elDb.del(key)
   },
+  */
 }
 
 const grantConfig = {
@@ -57,19 +64,16 @@ const app = new Koa()
 app.keys = ["grant"]
 // app.use(session({ httpOnly: false }, app))
 // app.use(session(app))
-app.use(session({ store, prefix: "session:" }, app))
+// app.use(session({ store, prefix: "session:" }, app))
+app.use(session({ store }, app))
 app.use(bodyParser())
 app.use(mount(grant))
 app.use(profile(grantConfig))
 
 const areEnabled = () => {
   const enabled = []
-  let r
-  for (r in grant.config) {
-    if (r === "defaults") continue
-    const { key, secret } = grant.config[r]
-    if (key && secret) enabled.push(r)
-  }
+  for (let r in grant.config)
+    if (grant.config[r].key && grant.config[r].secret) enabled.push(r)
   return { enabled }
 }
 
@@ -79,11 +83,11 @@ app.use((ctx) => {
   }
 
   if (ctx.request.path === "/api/fixer") {
-    console.log("grant.config", grant.config)
+    // console.log("grant.config", grant.config)
     grant.config.github.key = process.env.GITHUB_KEY
     grant.config.github.secret = process.env.GITHUB_SECRET
-    console.log("grant.config", grant.config)
-    ctx.body = grant.config
+    // console.log("grant.config", grant.config)
+    ctx.body = areEnabled()
   }
 
   if (ctx.request.path === callback) {
