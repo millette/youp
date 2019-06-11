@@ -1,17 +1,40 @@
+// npm
+import fetch from "isomorphic-unfetch"
+import Router from "next/router"
+
 // self
 import Layout from "../components/layout"
+
+const fixit = (ev) => {
+  console.log("fixit...")
+  fetch("/api/fixer")
+    .then((res) => res.json())
+    .then((json) => {
+      console.log("fixit-json", json)
+      Router.replace(document.location.pathname)
+    })
+    .catch((e) => {
+      console.error("fixit-OUPSY", e)
+    })
+}
 
 const Login = (props) => (
   <Layout>
     <h1>Login</h1>
-    <div className="login">
-      <form method="post" action="/connect/github">
-        <button type="submit">github</button>
-      </form>
-      <form method="post" action="/connect/twitter">
-        <button type="submit">twitter</button>
-      </form>
-    </div>
+    {props.enabled && props.enabled.length ? (
+      <div className="login">
+        {props.enabled.map((en) => (
+          <form key={en} method="post" action={`/connect/${en}`}>
+            <button type="submit">{en}</button>
+          </form>
+        ))}
+      </div>
+    ) : (
+      <div>
+        No providers configured to login,{" "}
+        <button onClick={fixit}>Fix it</button>.
+      </div>
+    )}
     <style jsx>{`
       .login {
         max-width: 340px;
@@ -41,9 +64,22 @@ const Login = (props) => (
 )
 
 Login.getInitialProps = ({ req }) => {
+  return fetch(req ? "http://localhost:3000/api/enabled" : "/api/enabled")
+    .then((res) => res.json())
+    .then((json) => {
+      console.log("json", json)
+      return json
+    })
+    .catch((e) => {
+      console.error("OUPSY", e)
+      return {}
+    })
+  /*
   console.log("req.url", req && req.url)
   console.log("req.headers", req && req.headers)
   return {}
+  */
+
   /*
   const protocol = process.env.NODE_ENV === "production" ? "https" : "http"
 
