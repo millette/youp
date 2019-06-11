@@ -64,7 +64,9 @@ const Login = (props) => (
 )
 
 Login.getInitialProps = ({ req }) => {
-  return fetch(req ? "http://localhost:3000/api/enabled" : "/api/enabled")
+  const u = req ? "http://localhost:3000/api/enabled" : "/api/enabled"
+  console.log("LOGIN", new Date(), u)
+  return fetch(u)
     .then((res) => res.json())
     .then((json) => {
       console.log("json", json)
