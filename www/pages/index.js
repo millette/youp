@@ -1,26 +1,24 @@
 // npm
-import React from "react"
+import Link from "next/link"
 import nextCookie from "next-cookies"
 
 // self
 import Layout from "../components/layout"
 
-/*
-const atob =
-  (typeof window !== "undefined" && window.atob) ||
-  ((a) => Buffer.from(a, "base64").toString())
-*/
-
 const Home = ({ profileId, provider, token }) => (
   <Layout token={token}>
     <h1>Cookie-based authentication example</h1>
-
-    {token && (
-      <div>
-        <p>Profile ID: {profileId}</p>
-        <p>Provider: {provider}</p>
-        <p>Token: {token}</p>
-      </div>
+    {token ? (
+      <p>
+        Hello {profileId} from {provider}.
+      </p>
+    ) : (
+      <p>
+        Not logged in.{" "}
+        <Link href="/login">
+          <a>Login?</a>
+        </Link>
+      </p>
     )}
     <style jsx>{`
       li {
@@ -40,25 +38,6 @@ Home.getInitialProps = (ctx) => {
     console.log("Cookie oups", hello, e)
     return {}
   }
-
-  /*
-  const sesh = nextCookie(ctx)["koa:sess"]
-  if (!sesh) return {}
-  const abc = atob(sesh)
-  console.log("ABC", abc)
-  const {
-    grant: {
-      provider,
-      profile,
-      response: { access_token: token },
-    },
-  } = JSON.parse(abc)
-  return {
-    provider,
-    token,
-    profile,
-  }
-  */
 }
 
 export default Home
