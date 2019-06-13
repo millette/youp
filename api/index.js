@@ -84,6 +84,13 @@ app.keys = ["grant"]
 // app.use(session({ httpOnly: false }, app))
 // app.use(session(app))
 // app.use(session({ store, prefix: "session:" }, app))
+
+app.use(async (ctx, next) => {
+  console.log("LOGGGGING:", new Date(), ctx.request.url)
+  await next()
+  console.log("After next...")
+})
+
 app.use(session({ store }, app))
 app.use(bodyParser())
 app.use(mount(grant))
@@ -99,10 +106,35 @@ const areEnabled = () => {
 
 app.use(profile(grantConfig))
 
-app.use((ctx) => {
+app.use(async (ctx) => {
   switch (ctx.request.path) {
     case "/api/enabled":
       ctx.body = areEnabled()
+      break
+
+    case "/api/me":
+      const who = ctx.session.grant && ctx.session.grant.profile
+      // console.log('WHO', who, typeof who)
+
+      if (typeof who === "string") {
+        // console.log('STRING')
+        // const x = await elDb.get(who)
+        // await next()
+        // console.log('After NEXT')
+        // ctx.body = JSON.stringify(x)
+        // console.log('GOT WHO', ctx.response.body)
+        // return
+        return elDb.get(who).then((x) => {
+          ctx.body = x
+        })
+      }
+      if (typeof who === "object") {
+        console.log("OBJECT")
+        ctx.body = who
+        break
+      }
+      console.log("OTHER", who, typeof who)
+      ctx.body = {}
       break
 
     case "/api/fixer":
@@ -121,24 +153,28 @@ app.use((ctx) => {
         profile,
         response: { access_token: token },
       } = ctx.session.grant
-      const userId = profile.id || profile.login || profile.url
+      const userId = profile && (profile.id || profile.login || profile.url)
       ctx.assert(userId, 501, "Could not determine user id from profile.", {
         provider,
         profile,
       })
       const profileId = ["user", provider, userId].join(":")
       profile._sessionKey = prefixed(ctx.cookies.get("koa:sess"))
-      elDb.put(profileId, profile)
       ctx.session.grant.profile = profileId
-      ctx.cookies.set(
-        "hello",
-        JSON.stringify({
-          profileId,
-          provider,
-          token,
-        }),
-        { httpOnly: false, sign: true }
-      )
+      try {
+        await elDb.put(profileId, profile)
+        ctx.cookies.set(
+          "hello",
+          JSON.stringify({
+            profileId,
+            provider,
+            token,
+          }),
+          { httpOnly: false, sign: true }
+        )
+      } catch (e) {
+        console.log("WELCOME PUT ERR", e, profileId, profile)
+      }
       ctx.response.redirect("/")
       break
 
