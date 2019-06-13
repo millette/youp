@@ -5,12 +5,6 @@ import fetch from "isomorphic-unfetch"
 // self
 import Layout from "../components/layout"
 
-/*
-const atob =
-  (typeof window !== "undefined" && window.atob) ||
-  ((a) => Buffer.from(a, "base64").toString())
-*/
-
 const Profile = ({ profileId, provider, token, json }) => (
   <Layout token={token}>
     <h1>Profile</h1>
@@ -33,17 +27,15 @@ const Profile = ({ profileId, provider, token, json }) => (
 
 Profile.getInitialProps = (ctx) => {
   const hello = nextCookie(ctx)["hello"]
-  console.log("HELLO", new Date(), !ctx.req, hello)
   if (!hello) return {}
   try {
     const oy = JSON.parse(hello)
-    console.log("OY", oy)
-    if (ctx.req) return oy
-    const u = ctx.req ? "http://localhost:3000/api/me" : "/api/me"
+    const headers = { cookie: ctx.req && ctx.req.headers.cookie }
+    const fetcher = ctx.req
+      ? fetch("http://localhost:3000/api/me", { headers })
+      : fetch("/api/me")
 
-    console.log("u", u)
-    // return fetch(u, { credentials: 'same-origin' })
-    return fetch(u)
+    return fetcher
       .then((res) => res.json())
       .then((json) => {
         console.log("EL-JSON", json)
@@ -52,30 +44,10 @@ Profile.getInitialProps = (ctx) => {
           json,
         }
       })
-      .catch((e) => console.log("KARAMBA", e))
   } catch (e) {
     console.log("Cookie oups", hello, e)
     return {}
   }
-
-  /*
-  const sesh = nextCookie(ctx)["koa:sess"]
-  if (!sesh) return {}
-  const abc = atob(sesh)
-  console.log("ABC", abc)
-  const {
-    grant: {
-      provider,
-      profile,
-      response: { access_token: token },
-    },
-  } = JSON.parse(abc)
-  return {
-    provider,
-    token,
-    profile,
-  }
-  */
 }
 
 export default Profile
