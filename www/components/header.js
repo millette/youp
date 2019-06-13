@@ -11,11 +11,18 @@ const Header = ({ token }) => (
           </Link>
         </li>
         {token ? (
-          <li>
-            <form method="post" action="/api/logout">
-              <button type="submit">Logout {token}</button>
-            </form>
-          </li>
+          <>
+            <li>
+              <Link href="/profile">
+                <a>Profile</a>
+              </Link>
+            </li>
+            <li>
+              <form method="post" action="/api/logout">
+                <button type="submit">Logout {token}</button>
+              </form>
+            </li>
+          </>
         ) : (
           <li>
             <Link href="/login">
