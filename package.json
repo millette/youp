@@ -30,6 +30,7 @@
     "arrowParens": "always"
   },
   "devDependencies": {
+    "eslint": "^6.2.2",
     "healthier": "^3.0.2",
     "husky": "2.7.0",
     "lint-staged": "^9.2.5",
