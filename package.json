@@ -30,9 +30,9 @@
     "arrowParens": "always"
   },
   "devDependencies": {
-    "healthier": "^2.0.0",
-    "husky": "^2.4.1",
-    "lint-staged": "^8.2.1",
+    "healthier": "^3.0.2",
+    "husky": "2.7.0",
+    "lint-staged": "^9.2.5",
     "prettier": "^1.18.2"
   }
 }
