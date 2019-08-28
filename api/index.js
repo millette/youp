@@ -97,7 +97,7 @@ app.use(mount(grant))
 
 const areEnabled = () => {
   const enabled = []
-  for (let r in grant.config)
+  for (const r in grant.config)
     if (grant.config[r].key && grant.config[r].secret) enabled.push(r)
 
   console.log("ENABLED", new Date(), enabled)
@@ -113,7 +113,7 @@ app.use(async (ctx) => {
       break
 
     case "/api/me":
-      const who = ctx.session.grant && ctx.session.grant.profile
+      var who = ctx.session.grant && ctx.session.grant.profile
       // console.log('WHO', who, typeof who)
 
       if (typeof who === "string") {
@@ -148,17 +148,17 @@ app.use(async (ctx) => {
         ctx.body = { err: "no-session", session: ctx.session }
         break
       }
-      const {
+      var {
         provider,
         profile,
         response: { access_token: token },
       } = ctx.session.grant
-      const userId = profile && (profile.id || profile.login || profile.url)
+      var userId = profile && (profile.id || profile.login || profile.url)
       ctx.assert(userId, 501, "Could not determine user id from profile.", {
         provider,
         profile,
       })
-      const profileId = ["user", provider, userId].join(":")
+      var profileId = ["user", provider, userId].join(":")
       profile._sessionKey = prefixed(ctx.cookies.get("koa:sess"))
       ctx.session.grant.profile = profileId
       try {

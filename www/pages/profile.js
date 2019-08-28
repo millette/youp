@@ -26,7 +26,7 @@ const Profile = ({ profileId, provider, token, json }) => (
 )
 
 Profile.getInitialProps = (ctx) => {
-  const hello = nextCookie(ctx)["hello"]
+  const hello = nextCookie(ctx).hello
   if (!hello) return {}
   try {
     const oy = JSON.parse(hello)

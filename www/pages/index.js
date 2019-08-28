@@ -29,7 +29,7 @@ const Home = ({ profileId, provider, token }) => (
 )
 
 Home.getInitialProps = (ctx) => {
-  const hello = nextCookie(ctx)["hello"]
+  const hello = nextCookie(ctx).hello
   console.log("HELLO", new Date(), !ctx.req, hello)
   if (!hello) return {}
   try {
